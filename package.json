@@ -41,6 +41,7 @@
 		"modern-normalize": "^2.0.0",
 		"pkce": "^1.0.0-beta2",
 		"pkce-gen": "^1.1.0",
-		"sass": "^1.62.1"
+		"sass": "^1.62.1",
+		"tippy.js": "^6.3.7"
 	}
 }
