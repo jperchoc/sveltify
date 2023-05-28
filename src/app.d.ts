@@ -9,8 +9,12 @@ declare global {
 			title?: string;
 		}
 		// interface Platform {}
-		// interface Platform {}
+		// interface Platform {}		
+	}
+	interface Window {
+		refreshPromise: Promise<Response> | null
 	}
 }
+
 
 export {};
