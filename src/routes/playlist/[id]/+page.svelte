@@ -1,17 +1,22 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 import { Button, ItemPage, TrackList } from "$components";
-	import { ArrowLeft, ArrowRight } from "lucide-svelte";
-	import type { PageData } from "./$types";
+	import { ArrowLeft, ArrowRight, Heart } from "lucide-svelte";
+	import type { ActionData, PageData } from "./$types";
+	import { applyAction, enhance } from "$app/forms";
 
     export let data: PageData;
+    export let form: ActionData;
 
     let isLoading = false;
+    let isLoadingFollow = false;
+    let followButton: Button<'button'>;
 
     $: playlist = data.playlist;
     $: color = data.color;
     $: tracks = data.playlist.tracks;
     $: currentPage = $page.url.searchParams.get('page') || 1;
+    $: isFollowing = data.isFollowing;
 
     let filteredTracks: SpotifyApi.TrackObjectFull[];
 
@@ -39,12 +44,11 @@ import { Button, ItemPage, TrackList } from "$components";
         isLoading = false;
     }
 </script>
-
 <ItemPage 
     title={playlist.name} 
     type={playlist.type} 
     color={color}
-    image={playlist.images[0].url}
+    image={playlist.images.length > 0 ? playlist.images[0].url : undefined}
 >
     <div slot="meta">
         <p class="playlist-description">{@html playlist.description}</p>
@@ -54,6 +58,37 @@ import { Button, ItemPage, TrackList } from "$components";
             <span>{playlist.tracks.total} Tracks</span>
         </p>
     </div>
+
+    <div class="playlist-actions">
+        {#if data.user?.id === playlist.owner.id}
+            <Button element="a" variant="outline">Edit Playlist</Button>
+        {:else if isFollowing !== null}
+            <form class="follow-form" 
+            method="POST" action={`?/${isFollowing ? 'unFollowPlaylist':'followPlaylist'}`}
+            use:enhance={() => {
+                isLoadingFollow = true;
+                return async ({ result }) => {
+                    isLoadingFollow = false;
+                    await applyAction(result);
+                    followButton.focus();
+                    if (result.type === 'success') {
+                        isFollowing = !isFollowing;
+                    }
+                }
+            }}
+        >
+                <Button bind:this={followButton} element="button" type="submit" variant="outline" disabled={isLoadingFollow}>
+                    <Heart aria-hidden focusable="false" fill={isFollowing ? 'var(--text-color)' : 'none'}/>
+                    {isFollowing ? 'Unfollow' : 'Follow'}
+                    <span class="visually-hidden">${playlist.name} playlist</span>
+                </Button>
+                {#if form?.followError}
+					<p class="error">{form.followError}</p>
+				{/if}
+            </form>
+        {/if}
+    </div>
+
     {#if playlist.tracks.items.length > 0}
         <TrackList tracks={filteredTracks} />
         {#if tracks.next}
@@ -136,4 +171,25 @@ import { Button, ItemPage, TrackList } from "$components";
             vertical-align: middle;
         }
     }
+    .playlist-actions {
+		display: flex;
+		justify-content: flex-end;
+		margin: 10px 0 30px;
+		.follow-form {
+			:global(.button) {
+				display: flex;
+				align-items: center;
+				:global(svg) {
+					margin-right: 10px;
+					width: 22px;
+					height: 22px;
+				}
+			}
+			p.error {
+				text-align: right;
+				color: var(--error);
+				font-size: functions.toRem(14);
+			}
+		}
+	}
 </style>
