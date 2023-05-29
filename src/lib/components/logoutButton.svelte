@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from "$app/navigation";
+	import { Button } from "$components";
 </script>
 
 <form method="POST" action="/api/auth/logout" on:submit|preventDefault={async () => {
@@ -13,5 +14,5 @@
         invalidateAll();
     }
 }}>
-    <button type="submit">Logout</button>
+    <Button element="button" type="submit">Logout</Button>
 </form>
