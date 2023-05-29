@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Button, ItemPage, TrackList } from "$components";
+	import { page } from "$app/stores";
+import { Button, ItemPage, TrackList } from "$components";
+	import { ArrowLeft, ArrowRight } from "lucide-svelte";
 	import type { PageData } from "./$types";
 
     export let data: PageData;
@@ -9,6 +11,7 @@
     $: playlist = data.playlist;
     $: color = data.color;
     $: tracks = data.playlist.tracks;
+    $: currentPage = $page.url.searchParams.get('page') || 1;
 
     let filteredTracks: SpotifyApi.TrackObjectFull[];
 
@@ -62,6 +65,22 @@
                 on:click={loadMoreTracks}
             >Load more <span class="visually-hidden">tracks</span></Button>
         </div>
+        <div class="pagination">
+            {#if tracks.previous}
+                <div class="previous">
+                    <Button variant="outline" element="a" href="{$page.url.pathname}?{new URLSearchParams({
+                        page: `${Number(currentPage) - 1}`
+                    }).toString()}"><ArrowLeft focusable="false" aria-hidden size={16}/> Previous Page</Button>
+                </div>
+            {/if}
+            {#if tracks.next}
+                <div class="next">
+                    <Button variant="outline" element="a" href="{$page.url.pathname}?{new URLSearchParams({
+                        page: `${Number(currentPage) + 1}`
+                    }).toString()}">Next Page <ArrowRight focusable="false" aria-hidden size={16}/></Button>
+                </div>
+            {/if}
+        </div>
         {/if}
     {:else}
         <div class="empty-playlist">
@@ -102,5 +121,19 @@
     .load-more {
         padding: 15px;
         text-align: center;
+        :global(html.no-js) & {
+            display: none;
+        }
+    }
+    .pagination {
+        display: none;
+        margin-top: 40px;
+        justify-content: space-between;
+        :global(html.no-js) & {
+            display: flex;
+        }
+        :global(svg) {
+            vertical-align: middle;
+        }
     }
 </style>
