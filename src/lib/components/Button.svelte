@@ -38,7 +38,7 @@
             border: 2px solid var(--accent-color);
         }
         &.button-outline {
-            background-color: none;
+            background: none;
             color: var(--text-color);
             border: 2px solid;
         }
