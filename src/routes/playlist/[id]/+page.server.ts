@@ -7,7 +7,7 @@ export const actions: Actions = {
         const res = await fetch(`${SPOTIFY_BASE_URL}/playlists/${params.id}/followers`, {
             method: 'PUT',
             headers: {
-                Authorization: `Bearer ${cookies.get('access_token')}`
+                Authorization: `Bearer ${cookies.get('access_token')}e`
             }
         });
         if (!res.ok) {
@@ -18,7 +18,7 @@ export const actions: Actions = {
         const res = await fetch(`${SPOTIFY_BASE_URL}/playlists/${params.id}/followers`, {
             method: 'DELETE',
             headers: {
-                Authorization: `Bearer ${cookies.get('access_token')}`
+                Authorization: `Bearer ${cookies.get('access_token')}e`
             }
         });
         if (!res.ok) {

@@ -2,7 +2,7 @@
 	import 'modern-normalize/modern-normalize.css';
 	import '../styles/main.scss';
 	import type { LayoutServerData } from './$types';
-	import { Navigation, Header } from '$components';
+	import { Navigation, Header, Toasts } from '$components';
 	import { page } from '$app/stores';
 	import NProgress from 'nprogress';
 	import 'nprogress/nprogress.css';
@@ -40,6 +40,9 @@
 {#if user}
 	<a href="#main-content" class="skip-link">Skip to content</a>
 {/if}
+
+<Toasts />
+
 <div id="main">
 	{#if user}
 		<div class="sidebar">

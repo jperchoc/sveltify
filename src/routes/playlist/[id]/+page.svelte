@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { applyAction, enhance } from "$app/forms";
 	import { page } from "$app/stores";
-import { Button, ItemPage, TrackList } from "$components";
+    import { Button, ItemPage, TrackList } from "$components";
+	import { toasts } from "$stores";
 	import { ArrowLeft, ArrowRight, Heart } from "lucide-svelte";
 	import type { ActionData, PageData } from "./$types";
-	import { applyAction, enhance } from "$app/forms";
+	import { tick } from "svelte";
 
     export let data: PageData;
     export let form: ActionData;
@@ -39,7 +41,7 @@ import { Button, ItemPage, TrackList } from "$components";
         if (res.ok) {
             tracks = {...resJSON, items: [...tracks.items, ...resJSON.items]};
         } else {
-            alert(resJSON.error.message || 'Could not load data');
+            toasts.error(resJSON.error.message || 'Could not load data');
         }
         isLoading = false;
     }
@@ -69,11 +71,17 @@ import { Button, ItemPage, TrackList } from "$components";
                 isLoadingFollow = true;
                 return async ({ result }) => {
                     isLoadingFollow = false;
-                    await applyAction(result);
-                    followButton.focus();
                     if (result.type === 'success') {
-                        isFollowing = !isFollowing;
-                    }
+							await applyAction(result);
+							isFollowing = !isFollowing;
+						} else if (result.type === 'failure') {
+							toasts.error('' + result.data?.followError);
+							await tick();
+						} else {
+							await applyAction(result);
+						}
+						followButton.focus();
+                    followButton.focus();
                 }
             }}
         >
