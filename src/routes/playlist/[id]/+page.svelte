@@ -8,7 +8,7 @@
 	import { tick } from "svelte";
     import type { ActionData as EditActionData} from './edit/$types';
 	import MicroModal from "micromodal";
-	import { invalidate } from "$app/navigation";
+	import { invalidateAll } from "$app/navigation";
 
     export let data: PageData;
     export let form: ActionData | EditActionData;
@@ -20,7 +20,6 @@
     $: playlist = data.playlist;
     $: color = data.color;
     $: tracks = data.playlist.tracks;
-    $: currentPage = $page.url.searchParams.get('page') || 1;
     $: isFollowing = data.isFollowing;
 
     let filteredTracks: SpotifyApi.TrackObjectFull[];
@@ -78,16 +77,16 @@
                 return async ({ result }) => {
                     isLoadingFollow = false;
                     if (result.type === 'success') {
-							await applyAction(result);
-							isFollowing = !isFollowing;
-						} else if (result.type === 'failure') {
-							toasts.error('' + result.data?.followError);
-							await tick();
-						} else {
-							await applyAction(result);
-						}
-						followButton.focus();
+                        await applyAction(result);
+                        isFollowing = !isFollowing;
+                    } else if (result.type === 'failure') {
+                        toasts.error('' + result.data?.followError);
+                        await tick();
+                    } else {
+                        await applyAction(result);
+                    }
                     followButton.focus();
+                    invalidateAll();
                 }
             }}
         >
@@ -122,7 +121,7 @@
         form={form && 'editForm' in form ? form : null}
         on:success={() => {
             MicroModal.close("edit-playlist-modal");
-            invalidate(`/api/spotify/playlists/${playlist.id}`);
+            invalidateAll();
         }}
     />
 </Modal>
