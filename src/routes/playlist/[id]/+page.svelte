@@ -1,7 +1,7 @@
 <script lang="ts">
     import { applyAction, enhance } from "$app/forms";
 	import { page } from "$app/stores";
-    import { Button, ItemPage, TrackList } from "$components";
+    import { Button, ItemPage, Pagination, TrackList } from "$components";
 	import { toasts } from "$stores";
 	import { ArrowLeft, ArrowRight, Heart } from "lucide-svelte";
 	import type { ActionData, PageData } from "./$types";
@@ -99,32 +99,7 @@
 
     {#if playlist.tracks.items.length > 0}
         <TrackList tracks={filteredTracks} />
-        {#if tracks.next}
-        <div class="load-more">
-            <Button 
-                element="button" 
-                variant="outline"
-                disabled={isLoading}
-                on:click={loadMoreTracks}
-            >Load more <span class="visually-hidden">tracks</span></Button>
-        </div>
-        <div class="pagination">
-            {#if tracks.previous}
-                <div class="previous">
-                    <Button variant="outline" element="a" href="{$page.url.pathname}?{new URLSearchParams({
-                        page: `${Number(currentPage) - 1}`
-                    }).toString()}"><ArrowLeft focusable="false" aria-hidden size={16}/> Previous Page</Button>
-                </div>
-            {/if}
-            {#if tracks.next}
-                <div class="next">
-                    <Button variant="outline" element="a" href="{$page.url.pathname}?{new URLSearchParams({
-                        page: `${Number(currentPage) + 1}`
-                    }).toString()}">Next Page <ArrowRight focusable="false" aria-hidden size={16}/></Button>
-                </div>
-            {/if}
-        </div>
-        {/if}
+        <Pagination paginatedList={tracks} on:loadmore={loadMoreTracks} isLoading={isLoading}/>
     {:else}
         <div class="empty-playlist">
             <p>No items added to this playlist yet.</p>
@@ -159,24 +134,6 @@
             &:first-child {
                 font-weight: 600;
             }
-        }
-    }
-    .load-more {
-        padding: 15px;
-        text-align: center;
-        :global(html.no-js) & {
-            display: none;
-        }
-    }
-    .pagination {
-        display: none;
-        margin-top: 40px;
-        justify-content: space-between;
-        :global(html.no-js) & {
-            display: flex;
-        }
-        :global(svg) {
-            vertical-align: middle;
         }
     }
     .playlist-actions {
