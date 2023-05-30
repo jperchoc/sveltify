@@ -7,9 +7,15 @@
 	import NProgress from 'nprogress';
 	import 'nprogress/nprogress.css';
 	import { hideAll } from 'tippy.js';
+	import MicroModal from 'micromodal';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	NProgress.configure({showSpinner: false});
+
+	if (browser) {
+		MicroModal.init();
+	}
 
 	let topbar: HTMLElement;
 	let scrollY: number;

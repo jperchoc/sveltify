@@ -1,14 +1,17 @@
 <script lang="ts">
     import { applyAction, enhance } from "$app/forms";
 	import { page } from "$app/stores";
-    import { Button, ItemPage, Pagination, TrackList } from "$components";
+    import { Button, ItemPage, Modal, Pagination, PlaylistForm, TrackList } from "$components";
 	import { toasts } from "$stores";
-	import { ArrowLeft, ArrowRight, Heart } from "lucide-svelte";
+	import { Heart } from "lucide-svelte";
 	import type { ActionData, PageData } from "./$types";
 	import { tick } from "svelte";
+    import type { ActionData as EditActionData} from './edit/$types';
+	import MicroModal from "micromodal";
+	import { invalidate } from "$app/navigation";
 
     export let data: PageData;
-    export let form: ActionData;
+    export let form: ActionData | EditActionData;
 
     let isLoading = false;
     let isLoadingFollow = false;
@@ -56,14 +59,17 @@
         <p class="playlist-description">{@html playlist.description}</p>
         <p class="meta">
             <span>{playlist.owner.display_name}</span>
-            <span>{followersFormat.format(playlist.followers.total)}</span>
+            <span>{followersFormat.format(playlist.followers.total)} Followers</span>
             <span>{playlist.tracks.total} Tracks</span>
         </p>
     </div>
 
     <div class="playlist-actions">
         {#if data.user?.id === playlist.owner.id}
-            <Button element="a" variant="outline">Edit Playlist</Button>
+            <Button element="a" variant="outline" href="/playlist/{playlist.id}/edit" on:click={(e) => {
+                e.preventDefault();
+                MicroModal.show('edit-playlist-modal');
+            }}>Edit Playlist</Button>
         {:else if isFollowing !== null}
             <form class="follow-form" 
             method="POST" action={`?/${isFollowing ? 'unFollowPlaylist':'followPlaylist'}`}
@@ -90,7 +96,7 @@
                     {isFollowing ? 'Unfollow' : 'Follow'}
                     <span class="visually-hidden">${playlist.name} playlist</span>
                 </Button>
-                {#if form?.followError}
+                {#if form && 'followForm' in form && form?.followError}
 					<p class="error">{form.followError}</p>
 				{/if}
             </form>
@@ -108,6 +114,18 @@
         </div>
     {/if}
 </ItemPage>
+
+<Modal id="edit-playlist-modal" title="Edit {playlist.name}">
+    <PlaylistForm 
+        action="/playlist/{playlist.id}/edit" 
+        {playlist} 
+        form={form && 'editForm' in form ? form : null}
+        on:success={() => {
+            MicroModal.close("edit-playlist-modal");
+            invalidate(`/api/spotify/playlists/${playlist.id}`);
+        }}
+    />
+</Modal>
 
 <style lang="scss">
     .empty-playlist {
