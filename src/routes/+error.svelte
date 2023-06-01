@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
 	import { Button, LogoutButton } from '$components';
 
-    const retryRoutes = ['/album/[id]', '/playlist/[id]', '/artist/[id]', '/search/[query]'];
+    const retryRoutes = ['/album/[id]', '/playlist/[id]', '/artist/[id]', '/search/[query], /[list=list]/[...rest]'];
     let isRetrying = false;
 </script>
 

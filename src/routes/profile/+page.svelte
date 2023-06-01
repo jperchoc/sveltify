@@ -51,7 +51,7 @@ import type { PageData } from "./$types";
                     <Button
                         element="a"
                         variant="outline"
-                        href="/profile/artists"
+                        href="/profile/following"
                     >
                         View All <span class="visually-hidden">artists that you are following</span>
                     </Button>
