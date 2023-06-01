@@ -10,6 +10,7 @@
 	import MicroModal from 'micromodal';
 	import { afterNavigate, beforeNavigate } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { X } from 'lucide-svelte';
 
 	NProgress.configure({showSpinner: false});
 
@@ -26,6 +27,10 @@
 	}
 
 	export let data: LayoutServerData;
+
+	$: hasError = $page.url.searchParams.get('error');
+	$: hasSuccess = $page.url.searchParams.get('success');
+
 	$: user = data.user
 	$: userAllPlaylists = data.userAllPlaylists;
 
@@ -57,6 +62,14 @@
 		</div>
 	{/if}
 	<div id="content">
+		{#if hasError || hasSuccess}
+			<div class="message" role="status" class:error={hasError} class:success={hasSuccess}>
+				{hasError ?? hasSuccess}
+				<a href="{$page.url.pathname}" class="close">
+					<X aria-hidden focusable="false" /><span class="visually-hidden">Close message</span>
+				</a>
+			</div>
+		{/if}
 		{#if user}
 			<div id="topbar" bind:this={topbar}>
 				<div
@@ -83,6 +96,29 @@
 		}
 		#content {
 			flex: 1;
+			.message {
+				position: sticky;
+				z-index: 9999;
+				padding: 10px 20px;
+				.close {
+					position: absolute;
+					right: 10px;
+				top: 5px;
+					&:focus {
+						outline: #fff;
+					}
+					:global(svg) {
+						stroke: var(--text-color);
+						vertical-align: middle;
+					}
+				}
+				&.error {
+					background-color: var(--error);
+				}
+				&.success {
+					background-color: var(--accent-color);
+				}
+			}
 			#topbar {
 				position: fixed;
 				height: var(--header-height);

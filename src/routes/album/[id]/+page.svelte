@@ -22,7 +22,7 @@
         <span class="date">{new Date(album.release_date).getFullYear()}</span>
         <span class="tracks-count">{`${album.total_tracks} Track${album.total_tracks > 1 ? 's':''}`}</span>
     </p>
-    <TrackList tracks={album.tracks.items} />
+    <TrackList tracks={album.tracks.items} userPlaylists={data.userAllPlaylists} />
     <div class="credits">
         <p class="date">
             
