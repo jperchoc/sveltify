@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
 	import { Button, LogoutButton } from '$components';
 
-    const retryRoutes = ['/album/[id]', '/playlist/[id]', '/artist/[id]'];
+    const retryRoutes = ['/album/[id]', '/playlist/[id]', '/artist/[id]', '/search/[query]'];
     let isRetrying = false;
 </script>
 
@@ -29,7 +29,7 @@
     {/if}
 
     {#if ![404, 401].includes($page.status) && $page.route.id && retryRoutes.includes($page.route.id)}
-        <p>Your current session has expired, please logout and login again</p>
+        <p>An error has occured </p>
         <div class="buttons">
             <Button 
                 disabled={isRetrying}
