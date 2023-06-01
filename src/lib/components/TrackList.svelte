@@ -19,8 +19,6 @@
 	export let tracks: SpotifyApi.TrackObjectFull[] | SpotifyApi.TrackObjectSimplified[];
 	export let isOwner: boolean = false;
 	export let userPlaylists: SpotifyApi.PlaylistObjectSimplified[] | undefined;
-	
-	$: console.log(userPlaylists)
 </script>
 
 <div class="tracks">
